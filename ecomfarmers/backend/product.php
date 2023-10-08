@@ -2,6 +2,72 @@
     session_start();
     $title = "dashboard";
     include '../components/backend_header.php';
+
+    if(isset($_POST['add'])) {
+        $image = $_FILES['image']['name'];
+        $title = $_POST['title'];
+        $description = $_POST['description'];
+        $price = $_POST['price'];
+        $quantity = $_POST['quantity'];
+        $category = $_POST['categories'];
+
+        $targetDir = '../img/';
+        $targetFile = $targetDir . basename($image);
+        $uploadOk = 1;
+        $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+
+        // Check if the file was uploaded successfully
+        if (isset($_FILES["image"]["tmp_name"])) {
+            $check = getimagesize($_FILES["image"]["tmp_name"]);
+            if ($check === false) {
+                $uploadOk = 0;
+            }
+        } else {
+            $uploadOk = 0;
+        }
+
+        // Check if the file already exists
+        if (file_exists($targetFile)) {
+            $uploadOk = 0;
+        }
+
+        // Check file size (500KB limit)
+        if ($_FILES["image"]["size"] > 500000) {
+            $uploadOk = 0;
+        }
+
+        // Allow only specific image file formats
+        $allowedFormats = ["jpg", "jpeg", "png", "gif"];
+        if (!in_array($imageFileType, $allowedFormats)) {
+            $uploadOk = 0;
+        }
+
+        if ($uploadOk == 0) {
+            echo "<script>alert('Sorry, your file was not uploaded, file already exist.'); window.location.href='product.php';</script>";
+        } else {
+            if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
+
+                // Prepare and execute the SQL query
+                $sql = "INSERT INTO `product_list` (`image`, `title`, `description`, `price`, `quantity`, `categories`) 
+                        VALUES (?, ?, ?, ?, ?, ?)";
+                
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("ssssss", $image, $title, $description, $price, $quantity, $category);
+
+                if ($stmt->execute()) {
+                    echo "<script>alert('New product added successfully.'); window.location.href='product.php';</script>";
+                } else {
+                    echo "<script>alert('New product not added successfully.'); window.location.href='product.php';</script>";
+                }
+
+                // Close the database connection
+                $stmt->close();
+                $conn->close();
+            } else {
+                echo "<script>alert('Sorry, there was an error uploading your file.'); window.location.href='product.php';</script>";
+            }
+        }
+    }
 ?>
 
 <body>
@@ -290,7 +356,7 @@
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"
                                             data-bs-dismiss="modal">Close</button>
-                                        <button type="submit" class="btn btn-primary" name="submit">Add Product</button>
+                                        <button type="submit" class="btn btn-primary" name="add">Add Product</button>
                                     </div>
                                 </form>
                             </div>
@@ -300,60 +366,6 @@
             </div>
         </div>
     </div>
-
-    <?php
-        if(isset($_POST['submit'])) {
-            $image = $_FILES['image']['name'];
-            $title = $_POST['title'];
-            $description = $_POST['description'];
-            $price = $_POST['price'];
-            $quantity = $_POST['quantity'];
-            $category = $_POST['categories'];
-
-            $targetDir = '../img/';
-            $targetFile = $targetDir . basename($image);
-            $uploadOk = 1;
-            $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
-
-            if(isset($_POST["submit"])) {
-                $check = getimagesize($_FILES["image"]["tmp_name"]);
-                if($check !== false) {
-                    $uploadOk = 1;
-                } else {
-                    $uploadOk = 0;
-                }
-            }
-
-            if (file_exists($targetFile)) {
-                $uploadOk = 0;
-            }
-
-            if ($_FILES["image"]["size"] > 500000) {
-                $uploadOk = 0;
-            }
-
-            if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
-                $uploadOk = 0;
-            }
-
-            if ($uploadOk == 0) {
-                echo "<script>alert('Sorry, your file was not uploaded.'); window.location.href='product.php';</script>";
-            } else {
-                if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
-                    $sql = "INSERT INTO `product_list` (`image`, `title`, `description`, `price`, `quantity`, `categories`) 
-                            VALUES ('$image', '$title', '$description', $price, $quantity, '$category', NOW())";
-        
-                    if ($conn->query($sql) === TRUE) {
-                        echo "<script>alert('New product added successfully.'); window.location.href='product.php';</script>";
-                    } else {
-                        echo "<script>alert('New product not added successfully.'); window.location.href='product.php';</script>";
-                    }
-                } else {
-                    echo "<script>alert('Sorry, there was an error uploading your file.'); window.location.href='product.php';</script>";
-                }
-            }
-        }
-    ?>
 
 </body>
 <!-- Include the necessary JavaScript file -->
