@@ -1,0 +1,49 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+html {
+    width: 100%;
+    margin: 0;
+    background-color: var(--background);
+}
+
+:root {
+    --text: #000000;
+    --background: #f5f5f5;
+    --primary: #90BC35;
+    --secondary: #FFF78C;
+    --accent: #183D8B;
+    --white: #FFFFFF;
+}
+
+.container-fluid {
+    padding: 0;
+    .row {
+        margin-right: 1rem;
+    }
+    .bg {
+        background-color: var(--primary);
+    }
+    .logo {
+        width: 4rem;
+    }
+    .col-xl-2 {
+        width: 18rem;
+        padding: 0;
+    }
+    .dropdown {
+        margin-bottom: 1rem;
+    }
+    .card {
+        padding: 1rem;
+        border-radius: 20px;
+        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    }
+    .table {
+        width: 75rem;
+    }
+}
