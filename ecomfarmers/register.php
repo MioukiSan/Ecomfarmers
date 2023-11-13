@@ -97,6 +97,10 @@
                             <option value="Oas">Oas</option>
                         </select>
                     </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="Agree" onchange="enableSubmit()" >
+                        <label class="form-check-label" for="exampleCheck1">Agree with Terms and Conditions</label>
+                    </div>
                     <button type="submit" class="btn btn-primary d-block w-100" name="submit"
                         id="submit">Submit</button>
                     <p class="mt-3">You have an account? <a href="login.php">Login</a></p>
@@ -105,5 +109,13 @@
         </div>
     </div>
 </body>
+<script>
+    function enableSubmit() {
+        var checkbox = document.getElementById('Agree');
+        var submitButton = document.getElementById('submit');
 
+        // Enable submit button if the checkbox is checked, otherwise disable it
+        submitButton.disabled = !checkbox.checked;
+    }
+</script>
 </html>

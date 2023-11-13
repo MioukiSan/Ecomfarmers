@@ -39,7 +39,7 @@
 
                 // Clear the shopping cart after successful insertion
                 $_SESSION['cart'] = array();
-
+                //decrease the products stock based from the $quantity of the order
                 echo "<script>alert('Billing information and product details inserted successfully! Your Order ID is $orderID.'); window.location.href='index.php'</script>";
             } else {
                 echo "Error: " . $insertBillingQuery;

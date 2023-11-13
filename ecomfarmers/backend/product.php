@@ -10,7 +10,7 @@
         $price = $_POST['price'];
         $quantity = $_POST['quantity'];
         $category = $_POST['categories'];
-
+        $unit = $_POST['unit'];
         $targetDir = '../img/';
         $targetFile = $targetDir . basename($image);
         $uploadOk = 1;
@@ -48,11 +48,11 @@
             if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
 
                 // Prepare and execute the SQL query
-                $sql = "INSERT INTO `product_list` (`image`, `title`, `description`, `price`, `quantity`, `categories`) 
-                        VALUES (?, ?, ?, ?, ?, ?)";
+                $sql = "INSERT INTO `product_list` (`image`, `title`, `description`, `price`, `quantity`, `categories`, `unit`) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?)";
                 
                 $stmt = $conn->prepare($sql);
-                $stmt->bind_param("ssssss", $image, $title, $description, $price, $quantity, $category);
+                $stmt->bind_param("sssssss", $image, $title, $description, $price, $quantity, $category, $unit);
 
                 if ($stmt->execute()) {
                     echo "<script>alert('New product added successfully.'); window.location.href='product.php';</script>";
@@ -69,7 +69,7 @@
         }
     }
 ?>
-
+<style></style>
 <body>
     <div class="container-fluid">
         <div class="row flex-nowrap">
@@ -103,7 +103,7 @@
                       
                         <li class="nav-item">
                             <a href="sales.php" class="nav-link link-light">
-                                <i class="bx bxs-cart me-2"></i>Sales & Transaction
+                                <i class="bx bxs-cart me-2"></i>Sales Report
                             </a>
                         </li>
                         <li class="nav-item">
@@ -189,7 +189,7 @@
                                             <td><?php echo $product['image']; ?></td>
                                             <td><?php echo $product['title']; ?></td>
                                             <td><?php echo $product['price']; ?></td>
-                                            <td><?php echo $product['quantity']; ?></td>
+                                            <td><?php echo $product['quantity'] . ' ' . $product['unit']; ?></td>
                                             <td><?php echo $product['categories']; ?></td>
                                             <td>
                                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
@@ -326,9 +326,24 @@
                                         <label for="image" class="form-label">Product Image</label>
                                         <input type="file" class="form-control" id="image" name="image">
                                     </div>
-                                    <div class="mb-3">
-                                        <label for="title" class="form-label">Product Title</label>
-                                        <input type="text" class="form-control" id="title" name="title">
+                                    <div class="row">
+                                        <div class="col-md-9">
+                                            <div class="mb-3">
+                                                <label for="title" class="form-label">Product Title</label>
+                                                <input type="text" class="form-control" id="title" name="title"">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label for="unit" class="form-label">Unit</label>
+                                                <select class="form-control" name="unit" required>
+                                                    <option selected disabled></option>
+                                                    <option value="Piece">Piece</option>
+                                                    <option value="Kilo">Kilo</option>
+                                                    <option value="Sack">Sack</option>
+                                                </select>  
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="description" class="form-label">Product Description</label>
@@ -372,5 +387,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
 </script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 </html>

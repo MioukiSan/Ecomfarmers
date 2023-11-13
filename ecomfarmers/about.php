@@ -3,10 +3,6 @@
     $title = "style";
     include 'components/header.php';
 
-    if (!isset($_SESSION['loggedin']) || $_SESSION['usertype'] !== 'User') {
-        header("location: login.php");
-        exit;
-    }
 
     function getLogin() {
         if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
@@ -17,8 +13,8 @@
         }
     }
 ?>
-
-<body>
+<html>
+<body class="justify-content-center">
     <div class="position-bottom-right">
         <a href="cart.php" class="btn btn-primary text-decoration-none border-0" id="cart-button">
             <i class='bx bxs-cart'></i>
@@ -43,25 +39,61 @@
             </div>
         </nav>
     </div>
-
-    <iframe class="mt-3"
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d124231.17602771065!2d123.41268049407334!3d13.336321992480489!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33a1a059e3dc8ec7%3A0x4a7340fccb2ae057!2sPolangui%2C%20Albay!5e0!3m2!1sen!2sph!4v1695038584561!5m2!1sen!2sph"
-        width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+    <div class="row bg-white shadow border m-5">
+        <h1 class="text-center" style="color: green; margin-top: .5em;"><b>ABOUT US</b></h1>
+        <div class="col-md-3 col-sm-3">
+            <img src="./img/logo (3).png" style="width: 20em; height: 15em;">
+        </div>
+        <div class="col-md-9 col-sm-9">
+            <div class="text-center p-4" style="margin-top: 3em;">
+            <h2>SAUD: Marketplace of Banco Santiago de Libon</h2>
+            <h5>At SAUD, we are dedicated to transforming the way you experience agriculture. 
+                As a unique marketplace backed by Banco Santiago de Libon, 
+                we take pride in bridging the gap between farmers and consumers, bringing the bounty of the land directly to your fingertips.</h5>
+            </div>
+        </div>
+    </div>
+    <div class="row bg-white shadow border m-5">
+        <h1 class="text-center" style="color: green; margin-top: .5em;"><b>WHAT WE OFFERS</b></h1>
+        <div class="col-md-6 col-sm-6">
+            <div class="text-center p-4" style="margin-top: 3em;">
+            <img src="./img/weoffer1.png" style="width: 20em; height:auto;">
+            <h2>SAUD: Marketplace of Banco Santiago de Libon</h2>
+            <h5>At SAUD, we are dedicated to transforming the way you experience agriculture. 
+                As a unique marketplace backed by Banco Santiago de Libon, 
+                we take pride in bridging the gap between farmers and consumers, bringing the bounty of the land directly to your fingertips.</h5>
+            </div>
+        </div>
+        <div class="col-md-6 col-sm-6">
+            <div class="text-center p-4" style="margin-top: 3em;">
+            <img src="./img/weoffer2.png" style="width: 20em; height:auto;">
+            <h2>SAUD: Marketplace of Banco Santiago de Libon</h2>
+            <h5>At SAUD, we are dedicated to transforming the way you experience agriculture. 
+                As a unique marketplace backed by Banco Santiago de Libon, 
+                we take pride in bridging the gap between farmers and consumers, bringing the bounty of the land directly to your fingertips.</h5>
+            </div>
+        </div>
+    </div>
+<div class="mt-1 text-center bg-white shadow border">
+    <h3 class="text-center p-3" style="color: green;"><b>PARTNER BRANCHES</b></h3>
+<iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3882.924847880235!2d123.48734237463685!3d13.29263500775947!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33a1a0f0a3491a4b%3A0x5a781ad5b7d314c5!2sBanco%20Santiago%20De%20Libon!5e0!3m2!1sen!2sph!4v1699756597104!5m2!1sen!2sph"
+        width="400" height="350" style="border: 12px;" allowfullscreen="" loading="lazy"
         referrerpolicy="no-referrer-when-downgrade">
     </iframe>
     <iframe
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d248609.63635283103!2d123.13205974715447!3d13.192286159914078!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33a10a73b472f673%3A0x78251e0e1212c250!2sOas%2C%20Albay!5e0!3m2!1sen!2sph!4v1695038613811!5m2!1sen!2sph"
-        width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d902.6028705168185!2d123.4384077586262!3d13.299473965953926!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33a1a0278cc1a33f%3A0x1391dcc70b1ba109!2sRURAL%20BANK%20OF.SANTIAGO%20DE%20LIBON!5e0!3m2!1sen!2sph!4v1699756822489!5m2!1sen!2sph"
+        width="400" height="350" style="border: 12px;" allowfullscreen="" loading="lazy"
         referrerpolicy="no-referrer-when-downgrade">
     </iframe>
-    <iframe class="mb-5"
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d124275.73229855111!2d123.28865519267131!3d13.249358632821563!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33a175b7df7e2021%3A0xb0990c6e61aff2e2!2sLibon%2C%20Albay!5e0!3m2!1sen!2sph!4v1695038629272!5m2!1sen!2sph"
-        width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+    <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1360.182949646855!2d123.50049404168132!3d13.256544964455323!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33a10a73f5aabf1d%3A0x6b948f28514451c6!2sWestern%20Union%20-%20Banco%20Santiago%20De%20Libon%20-%20Oas!5e0!3m2!1sen!2sph!4v1699756923646!5m2!1sen!2sph"
+        width="400" height="350" style="border: 12px;" allowfullscreen="" loading="lazy"
         referrerpolicy="no-referrer-when-downgrade">
     </iframe>
-
-    <footer>
-        <p class="m-0">&copy; 2023 E-Commerce Farmers. All rights reserved.</p>
-    </footer>
-
+</div>
 </body>
+<footer class="mt-5">
+    <p class="m-0">&copy; 2023 E-Commerce Farmers. All rights reserved.</p>
+</footer>
+</html>

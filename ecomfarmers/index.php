@@ -3,10 +3,10 @@
     $title = "style";
     include 'components/header.php';
 
-    if (!isset($_SESSION['loggedin']) || $_SESSION['usertype'] !== 'User') {
-        header("location: login.php");
-        exit;
-    }
+    // if (!isset($_SESSION['loggedin']) || $_SESSION['usertype'] !== 'User') {
+    //     header("location: login.php");
+    //     exit;
+    // }
 
     function getLogin() {
         if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
@@ -34,6 +34,7 @@
                 <ul class="d-flex align-items-center list-unstyled gap-5 m-0">
                     <li><a href="index.php" target="_self" class="active">Home</a></li>
                     <li><a href="#sidebar" target="_self">Product</a></li>
+                    <li><a href="service.php" target="_self">Service</a></li>
                     
                     <li><a href="about.php" target="_self">About</a></li>
                     <?php
@@ -44,13 +45,13 @@
         </nav>
     </div>
 
-    <div class="hero pt-2" id="hero">
+    <!-- <div class="hero pt-2" id="hero">
         <div class="text-container">
             <h1 class="fw-bolder m-0">"SAUD": A Web-based Marketplace of Banco Santiago de Libon</h1>
             <p>Connecting customers to your brand <span>Buy-Sale-Deal-Local</span></p>
         </div>
         <img src="img/cover.png" alt="Hero" class="img-fluid">
-    </div>
+    </div> -->
 
     <?php
         $categories = ["Vegetables", "Fish", "Meats", "Rice", "Fruit"];
@@ -70,7 +71,7 @@
             $whereClause = "WHERE " . implode(" OR ", $categoryConditions);
         }
 
-        $sql = "SELECT id, image, title, description, price, quantity FROM product_list $whereClause";
+        $sql = "SELECT id, image, title, description, price, quantity, unit FROM product_list $whereClause";
         $result = $conn->query($sql);
 
         $products = [];
@@ -108,13 +109,17 @@
                             <img src="img/<?php echo $product['image']; ?>" class="card-img-top"
                                 alt="<?php echo $product['title']; ?>">
                             <div class="card-body">
-                                <h5 class="card-title fw-bolder"><?php echo $product['title']; ?></h5>
+                                <!-- <h5 class="card-title fw-bolder"><?php echo $product['title']; ?></h5> -->
+                                <div class="d-flex justify-content-between">
+                                    <div class="col-md-7">
+                                        <h5 class="card-title fw-bolder"><?php echo $product['title']; ?></h5>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <p class="card-text price">₱ <?php echo $product['price'] .'/'. $product['unit']; ?></p>
+                                    </div>
+                                </div>
                                 <p class="card-text"><?php echo $product['description']; ?></p>
-                                <p class="card-text price">₱ <?php echo $product['price']; ?></p>
-
-                                <!-- Display the harvest time -->
-                               
-
+                                <!-- <p class="card-text price">₱ <?php echo $product['price'] .'/'. $product['unit']; ?></p> -->
                                 <form action="cart.php" method="get">
                                     <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
                                     <button type="submit" class="btn btn-primary border-0" name="submit">Add to

@@ -93,7 +93,7 @@
                     <hr>
                     <div class="row">
                         <div class="col">
-                            <div class="table-responsive">
+                            <div class="table table-responsive">
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>

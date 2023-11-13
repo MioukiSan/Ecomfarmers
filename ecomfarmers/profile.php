@@ -64,10 +64,11 @@
             exit;
         }
 ?>
-    <div class="container mt-5">
+    <div class="container">
         <div class="card">
-            <div class="card-header">
+            <div class="card-header d-flex justify-content-between">
                 <h2 class="fw-bolder">User Profile</h2>
+                <button type="button" onclick="window.location.href='order_history.php'" class="btn btn-success">Order History</button>
             </div>
             <div class="card-body">
                 <?php
@@ -88,34 +89,6 @@
                         value="<?= htmlspecialchars($row[$fieldId]) ?>" readonly>
                 </div>
                 <?php endforeach; ?>
-
-                <!-- Display order history and associated products -->
-                <h3 class="mt-4 fw-bolder">Order History</h3>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Fullname</th>
-                            <th>Product Name</th>
-                            <th>Quantity</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php while ($orderRow = $orderResult->fetch_assoc()): ?>
-                        <tr>
-                            <td><?= $orderRow['Order_ID'] ?></td>
-                            <td><?= $orderRow['Fullname'] ?></td>
-                            <td><?= $orderRow['ProductName'] ?></td>
-                            <td><?= $orderRow['Quantity'] ?></td>
-                            <td><?= $orderRow['Total'] ?></td>
-                            <td><?= $orderRow['Status'] ?></td>
-                        </tr>
-                        <?php endwhile; ?>
-                    </tbody>
-                </table>
-            </div>
         </div>
     </div>
 

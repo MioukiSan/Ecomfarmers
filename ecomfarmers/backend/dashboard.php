@@ -12,9 +12,8 @@
 <body>
     <div class="container-fluid">
         <div class="row flex-nowrap">
-            <div class="col-12 col-xl-2">
-                <div
-                    class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100 bg">
+            <div class="col-12 col-xl-2 navside">
+                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100 bg">
                     <div class="d-flex">
                         <img src="../img/logo.png" class="logo me-2" alt="pos">
                         <a href="index.php"
@@ -42,12 +41,17 @@
                        
                         <li class="nav-item">
                             <a href="sales.php" class="nav-link link-light">
-                                <i class="bx bxs-cart me-2"></i>Sales & Transaction
+                                <i class="bx bxs-cart me-2"></i>Sales Report
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="order.php" class="nav-link link-light">
                                 <i class='bx bxs-bookmark me-2'></i>Order Management
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="order.php" class="nav-link link-light">
+                                <i class='bx bxs-hard-hat me-2'></i>Service Avail Management
                             </a>
                         </li>
                     </ul>
@@ -71,46 +75,61 @@
             </div>
 
             <?php
-                // Define functions to fetch data
-                function getCount($conn, $table) {
-                    $query = "SELECT COUNT(*) as count FROM $table";
-                    $result = $conn->query($query);
-                    $row = $result->fetch_assoc();
-                    return $row['count'];
-                }
+// Define functions to fetch data
+function getCount($conn, $table)
+{
+    $query = "SELECT COUNT(*) as count FROM $table";
+    $result = $conn->query($query);
+    $row = $result->fetch_assoc();
+    return $row['count'];
+}
 
-                // Fetch data using functions
-                $accountCount = getCount($conn, 'account');
-                $productCount = getCount($conn, 'products');
-                $productListCount = getCount($conn, 'product_list');
-            ?>
+// Fetch data using functions
+$accountCount = getCount($conn, 'account');
+$productCount = getCount($conn, 'products');
+$productListCount = getCount($conn, 'product_list');
 
-            <!-- Main Content -->
+// Define card information array
+$cardInfo = array(
+    'All Account' => $accountCount,
+    'All Sales' => $productCount,
+    'All Product List' => $productListCount,
+);
+?>
+
+<!-- Main Content -->
             <div class="col-12 col-xl-10">
                 <div class="col mt-4">
                     <h1 class="mb-4 text-uppercase fw-bolder">Dashboard</h1>
                     <hr>
                     <div class="row">
                         <?php
-                        $cardInfo = array(
-                            'All Account' => $accountCount,
-                            'All Sales' => $productCount,
-                            'All Product List' => $productListCount,
-                        );
-
                         foreach ($cardInfo as $title => $count) {
-                            echo '<div class="col-md-6 col-lg-4 mb-3">';
-                            echo '<div class="card bg-light">';
-                            echo '<div class="card-body">';
-                            echo '<h5 class="card-title">' . $title . '</h5>';
-                            echo '<p class="card-text">You have ' . $count . ' ';
-                            echo ($title === 'Staff' || $title === 'Patients') ? $title : 'appointments';
-                            echo ' today.</p>';
-                            echo '</div>';
-                            echo '</div>';
-                            echo '</div>';
-                        }
-                    ?>
+                        ?>
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><?php echo $title; ?></h5>
+                                        <p class="card-text">
+                                            <?php
+                                            echo 'You have ' . $count . ' ';
+                                            if ($title === 'Staff' || $title === 'Patients') {
+                                                echo $title;
+                                            } else {
+                                                if ($title === 'All Sales') {
+                                                    echo 'total sales as of today.';
+                                                } elseif ($title === 'All Product List') {
+                                                    echo 'total active products.';
+                                                } else {
+                                                    echo 'active user accounts.';
+                                                }
+                                            }
+                                            ?>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php } ?>
                     </div>
                 </div>
             </div>
