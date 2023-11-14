@@ -3,6 +3,7 @@ session_start();
 $title = "checkout";
 include 'components/header.php';
 $ids = $_SESSION['id'];
+$productId = $_GET['product_id'];
 
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header("Location: login.php");
@@ -55,7 +56,7 @@ function getLogin() {
                  $sql = "SELECT p.*, pl.quantity AS quantityProd, pl.status AS product_status 
                      FROM preorder p 
                      LEFT JOIN product_list pl ON p.product_id = pl.id 
-                     WHERE p.account_id = $ids";
+                     WHERE p.account_id = $ids AND p.id = $productId";
                  $result = mysqli_query($conn, $sql);
                  $totalPrice = 0;
                  foreach ($result as $preorder) {
