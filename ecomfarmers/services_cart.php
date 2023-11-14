@@ -2,6 +2,10 @@
     session_start();
     $title = "cart";
     include 'components/header.php';
+    if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+        header("Location: login.php");
+        exit();
+    }
     $idACCOUNT = $_SESSION['id'];
     function getUsername() {
         if(!isset($_SESSION['username'])) {
