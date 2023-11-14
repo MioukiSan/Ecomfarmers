@@ -9,7 +9,7 @@ if (empty($_SESSION['cart'])) {
 }
 
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header("Location: login.php");
+    header("Location: login_purchase.php");
     exit();
 }
 
