@@ -86,7 +86,7 @@
                 $services = $result->fetch_assoc();
 
                 // Check if the service is already availed by the user
-                $checkSql = "SELECT * FROM availed_service WHERE service_id = '{$services['id']}' AND account_id = {$_SESSION['id']}";
+                $checkSql = "SELECT * FROM availed_service WHERE service_id = '{$services['id']}' AND account_id = {$_SESSION['id']} AND avail_status != 'Completed'";
                 $checkResult = $conn->query($checkSql);
 
                 if ($checkResult->num_rows == 0) {
