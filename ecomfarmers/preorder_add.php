@@ -1,7 +1,10 @@
 <?php
 session_start();
 include 'connect.php';
-
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+    header("Location: login.php");
+    exit();
+}
 if (isset($_POST['preorder'])) {
     $ids = $_SESSION['id'];
     $prodID = $_POST['ProdID'];

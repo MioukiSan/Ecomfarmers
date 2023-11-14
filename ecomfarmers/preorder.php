@@ -2,14 +2,14 @@
     session_start();
     $title = "cart";
     include 'components/header.php';
-    $ids = $_SESSION['id'];
+
     function getUsername() {
         if(!isset($_SESSION['username'])) {
           header('Location: login.php');
           exit();
         }
     }
-
+    $ids = $_SESSION['id'];
     function getLogin() {
         if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
             echo '<li><a href="profile.php"><i class="bx bx-user"></i></a></li>';
