@@ -93,7 +93,7 @@
                         <?php } else { ?>
                             <a href="preorder_checkout.php?product_id=<?= $preorderID ?>" class="btn btn-primary">Checkout</a>
                         <?php } ?>
-                        <a href="cart_remove.php?product_id=<?= $preorderID ?>"><i class="bx bx-trash"></i></a>
+                        <a href="preorder_remove.php?product_id=<?= $preorderID ?>"><i class="bx bx-trash"></i></a>
                     </td>
                 </tr>
             <?php
