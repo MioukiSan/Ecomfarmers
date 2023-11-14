@@ -35,8 +35,8 @@
             <div class="menu">
                 <ul class="d-flex align-items-center list-unstyled gap-5 m-0">
                     <li><a href="index.php" target="_self" class="active">Home</a></li>
-                    <li><a href="index.php#sidebar" target="_self">Product</a></li>
-                    
+                    <li><a href="index.php#sidebar" target="_self">Products</a></li>
+                    <li><a href="services.php" target="_self">Services</a></li>
                     <li><a href="about.php" target="_self">About</a></li>
                     <?php
                         getLogin();
@@ -64,6 +64,7 @@
 
             if ($result->num_rows > 0) {
                 $product = $result->fetch_assoc();
+                $quantityProd = $product['quantity'];
 
                 $cartItem = [
                     'id' => $product['id'],
@@ -110,7 +111,8 @@
                     <td>
                         <div class="input-group">
                             <input type="number" class="form-control text-center quantity-input"
-                                value="<?= $quantity ?>" data-product-id="<?= $productID ?>">
+                                value="<?= $quantity ?>" data-product-id="<?= $productID ?>"
+                                max="<?= $quantityProd ?>">
                         </div>
                     </td>
                     <td class="product-total">₱ <?= number_format($total, 2) ?></td>

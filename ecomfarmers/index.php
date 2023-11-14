@@ -68,10 +68,13 @@
                 $escapedCategory = mysqli_real_escape_string($conn, $selectedCategory);
                 $categoryConditions[] = "categories = '$escapedCategory'";
             }
-            $whereClause = "WHERE " . implode(" OR ", $categoryConditions);
+            $whereClause = "WHERE " . implode(" OR ", $categoryConditions) . "AND status != 'Sold' AND quantity != '0'";
         }
-
-        $sql = "SELECT id, image, title, description, price, quantity, unit, harvest, status FROM product_list WHERE status != 'Sold' $whereClause";
+        $preOrderCondition = "";
+        if (isset($_GET['preorder'])) {
+            $preOrderCondition = "status = 'Pre Order'";
+        }    
+        $sql = "SELECT id, image, title, description, price, quantity, unit, harvest, status FROM product_list $whereClause";
         $result = $conn->query($sql);
 
         $products = [];
@@ -120,19 +123,27 @@
                                 </div>
                                 <p class="card-text"><?php echo $product['description']; ?></p>
                                 <!-- <p class="card-text price">₱ <?php echo $product['price'] .'/'. $product['unit']; ?></p> -->
+                                <!-- Form for 'On Sale' products -->
                                 <form action="cart.php" method="get">
                                     <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
                                     <div class="text-center">
-                                        <?php if($product['status'] === 'On Sale'){ ?>
-                                        <button type="submit" class="btn btn-primary border-0" name="submit">Add to
-                                            Cart</button>
-                                </form>
-                                <form action="" method="POST">
-                                    <?php } elseif($product['status'] === 'Pre Order') { ?>
-                                        <p><?php echo 'harvest Date:' . $product['harvest'] ?></p>
-                                        <button class="btn btn-primary border-0" name="preorder" type="submit">Pre Order</button>
+                                        <?php if($product['status'] === 'On Sale') { ?>
+                                            <button type="submit" class="btn btn-primary border-0" name="submit">Add to Cart</button>
                                         <?php } ?>
                                     </div>
+                                </form>
+
+                                <!-- Form for 'Pre Order' products -->
+                                <form action="preorder_add.php" method="post">
+                                    <?php if($product['status'] === 'Pre Order') { ?>
+                                        <input type="hidden" name="ProdID" value="<?= $product['id'] ?>">
+                                        <input type="hidden" name="name" value="<?= $product['title'] ?>">
+                                        <input type="hidden" name="price" value="<?= $product['price'] ?>">
+                                        <div class="text-center">
+                                            <p><?= 'harvest Date:' . $product['harvest'] ?></p>
+                                            <button class="btn btn-primary border-0" name="preorder" type="submit">Pre Order</button>
+                                        </div>
+                                    <?php } ?>
                                 </form>
                             </div>
                         </div>

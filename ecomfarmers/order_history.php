@@ -46,7 +46,7 @@
                     <div class="dropdown-menu" id="historyDropdown" style="display: none;">
                         <a class="dropdown-item" href="order_history.php">Order History</a>
                         <a class="dropdown-item" href="service_avail_history.php">Service Availed History</a>
-                        <a class="dropdown-item" href="#">Pre Order</a>
+                        <a class="dropdown-item" href="preorder.php">Pre Order</a>
                     </div>
                 </div>
             </div>

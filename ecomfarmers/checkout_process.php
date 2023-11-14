@@ -34,6 +34,12 @@
                         $insertProductQuery = "INSERT INTO products (BillingID, ProductName, Quantity, Total, Status)
                                             VALUES ('$billingID', '$productname', '$quantity', '$total', '$status')";
                         $conn->query($insertProductQuery);
+
+                        // Update stock in product_list table
+                        $updateStockQuery = "UPDATE product_list
+                                            SET quantity = quantity - $quantity
+                                            WHERE title = '$productname'";
+                        $conn->query($updateStockQuery);
                     }
                 }
 
