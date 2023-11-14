@@ -26,7 +26,7 @@
     if (isset($_POST['checkout'])) {
         $id = $_POST['ID'];
     
-        $getCheck = "SELECT avail_id FROM availed_service WHERE account_id = $id";
+        $getCheck = "SELECT avail_id FROM availed_service WHERE account_id = $id AND avail_id = {$_SESSION['avail_id']}";
         $getCheckres = mysqli_query($conn, $getCheck);
     
         while ($row = mysqli_fetch_assoc($getCheckres)) {
@@ -137,6 +137,7 @@
 
                 if ($sqlGETres && mysqli_num_rows($sqlGETres) > 0) {
                     foreach ($sqlGETres as $service) {
+                        $_SESSION['avail_id'] = $service['avail_id'];
                 ?>
                         <tr>
                             <td><?= $service['title'] ?></td>

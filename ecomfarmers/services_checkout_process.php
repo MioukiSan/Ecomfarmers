@@ -1,7 +1,8 @@
 <?php
     session_start(); // Start the session
     include 'connect.php';
-
+    include 'function.php';
+    
     if (isset($_POST['submit'])) {
         $fullname = $_POST['fullname'];
         $email = $_POST['email'];
@@ -16,7 +17,7 @@
             echo "<script>alert('Contact number should start with 09 and have exactly 11 digits. Please provide a valid Philippine contact number.'); window.location.href='checkout.php'; </script>";
         } else {
             // Generate a unique Order_ID
-            $orderID = uniqid();
+            $orderID = generateSalesTransactionCode($conn);
 
             // Insert billing information into the database
             $insertBillingQuery = "INSERT INTO billing (Fullname, Email, Contact, address, Location, PaymentMethod, Order_ID)
