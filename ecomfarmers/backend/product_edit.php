@@ -8,6 +8,7 @@ if (isset($_POST['submit'])) {
     $price = $_POST['price'];
     $quantity = $_POST['quantity'];
     $categories = $_POST['categories'];
+    $status = $_POST['status'];
 
     // Check if a new image is uploaded
     if (!empty($_FILES['image']['name'])) {
@@ -47,7 +48,8 @@ if (isset($_POST['submit'])) {
                             description = '$description', 
                             price = $price, 
                             quantity = $quantity, 
-                            categories = '$categories'
+                            categories = '$categories',
+                            status = '$status'
                         WHERE id = $productId";
 
                 if ($conn->query($sql) === TRUE) {
@@ -67,7 +69,7 @@ if (isset($_POST['submit'])) {
                     price = $price, 
                     quantity = $quantity, 
                     categories = '$categories',
-                    harvest = '$harvest'
+                    status = '$status'
                 WHERE id = $productId";
 
         if ($conn->query($sql) === TRUE) {

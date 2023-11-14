@@ -139,7 +139,7 @@ nav label {
   width: -moz-fit-content;
   width: fit-content;
   padding: 5px 10px;
-  border-radius: 20px;
+  border-radius: 15px;
   color: var(--white);
   background-color: var(--accent);
 }

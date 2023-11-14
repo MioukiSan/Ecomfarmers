@@ -3,7 +3,7 @@
     $title = "dashboard";
     include '../components/backend_header.php';
 
-    if(isset($_POST['add'])) {
+    if (isset($_POST['add'])) {
         $image = $_FILES['image']['name'];
         $title = $_POST['title'];
         $description = $_POST['description'];
@@ -11,11 +11,14 @@
         $quantity = $_POST['quantity'];
         $category = $_POST['categories'];
         $unit = $_POST['unit'];
+        $status = $_POST['status']; // Add this line for the new 'status' column
+        $harvestTime = ($status == 'Pre Order') ? $_POST['harvestTime'] : null; // Add this line for 'harvest time'
+    
         $targetDir = '../img/';
         $targetFile = $targetDir . basename($image);
         $uploadOk = 1;
         $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
-
+    
         // Check if the file was uploaded successfully
         if (isset($_FILES["image"]["tmp_name"])) {
             $check = getimagesize($_FILES["image"]["tmp_name"]);
@@ -25,41 +28,41 @@
         } else {
             $uploadOk = 0;
         }
-
+    
         // Check if the file already exists
         if (file_exists($targetFile)) {
             $uploadOk = 0;
         }
-
+    
         // Check file size (500KB limit)
         if ($_FILES["image"]["size"] > 500000) {
             $uploadOk = 0;
         }
-
+    
         // Allow only specific image file formats
         $allowedFormats = ["jpg", "jpeg", "png", "gif"];
         if (!in_array($imageFileType, $allowedFormats)) {
             $uploadOk = 0;
         }
-
+    
         if ($uploadOk == 0) {
-            echo "<script>alert('Sorry, your file was not uploaded, file already exist.'); window.location.href='product.php';</script>";
+            echo "<script>alert('Sorry, your file was not uploaded, file already exists.'); window.location.href='product.php';</script>";
         } else {
             if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
-
+    
                 // Prepare and execute the SQL query
-                $sql = "INSERT INTO `product_list` (`image`, `title`, `description`, `price`, `quantity`, `categories`, `unit`) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?)";
+                $sql = "INSERT INTO `product_list` (`image`, `title`, `description`, `price`, `quantity`, `categories`, `unit`, `status`, `harvest`) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 
                 $stmt = $conn->prepare($sql);
-                $stmt->bind_param("sssssss", $image, $title, $description, $price, $quantity, $category, $unit);
-
+                $stmt->bind_param("sssssssss", $image, $title, $description, $price, $quantity, $category, $unit, $status, $harvestTime);
+    
                 if ($stmt->execute()) {
                     echo "<script>alert('New product added successfully.'); window.location.href='product.php';</script>";
                 } else {
                     echo "<script>alert('New product not added successfully.'); window.location.href='product.php';</script>";
                 }
-
+    
                 // Close the database connection
                 $stmt->close();
                 $conn->close();
@@ -68,20 +71,21 @@
             }
         }
     }
+   
 ?>
 <style></style>
 <body>
     <div class="container-fluid">
-        <div class="row flex-nowrap">
-            <div class="col-12 col-xl-2">
-                <div
-                    class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100 bg">
+    <div class="row flex-nowrap">
+            <div class="col-12 col-xl-2 navside">
+                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100 bg">
                     <div class="d-flex">
                         <img src="../img/logo.png" class="logo me-2" alt="pos">
                         <a href="index.php"
                             class="d-flex align-items-center mb-md-0 me-md-auto text-white text-decoration-none">
                             <span class="fw-bold"><?php echo "Welcome, ", $_SESSION['username']; ?></span>
                         </a>
+                        <button class="btn text-center menubut" id="menu-sm-screen"><i class='bx bx-menu bx-md' style='color:#ffffff'  ></i></button>
                     </div>
                     <hr>
                     <ul class="nav nav-pills flex-column mb-auto w-100">
@@ -96,11 +100,15 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="product.php" class="nav-link active" aria-current="page">
+                            <a href="product.php"  class="nav-link active" aria-current="page">
                                 <i class="bx bxl-product-hunt me-2"></i>Product Management
                             </a>
                         </li>
-                      
+                        <li class="nav-item">
+                            <a href="service.php" class="nav-link link-light">
+                                <i class="bx bx-bulb me-2"></i>Service Management
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a href="sales.php" class="nav-link link-light">
                                 <i class="bx bxs-cart me-2"></i>Sales Report
@@ -111,9 +119,14 @@
                                 <i class='bx bxs-bookmark me-2'></i>Order Management
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="service_avail.php" class="nav-link link-light">
+                                <i class='bx bxs-hard-hat me-2'></i>Service Avail Management
+                            </a>
+                        </li>
                     </ul>
                     <hr>
-                    <div class="dropdown">
+                    <div class="dropdown drop">
                         <a href="#"
                             class="d-flex align-items-center text-white text-decoration-none dropdown-toggle ms-2"
                             id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
@@ -161,7 +174,7 @@
             <!-- Main Content -->
             <div class="col-12 col-xl-10">
                 <div class="col mt-4">
-                    <h1 class="mb-4 text-uppercase fw-bolder">Product & Services Management</h1>
+                    <h1 class="mb-4 text-uppercase fw-bolder">Product Management</h1>
                     <hr>
                     <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal"
                         data-bs-target="#addProductModal">
@@ -179,6 +192,7 @@
                                             <th>Price</th>
                                             <th>Quantity</th>
                                             <th>Categories</th>
+                                            <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -191,6 +205,7 @@
                                             <td><?php echo $product['price']; ?></td>
                                             <td><?php echo $product['quantity'] . ' ' . $product['unit']; ?></td>
                                             <td><?php echo $product['categories']; ?></td>
+                                            <td><?php echo $product['status'] ?></td>
                                             <td>
                                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                                     data-bs-target="#editProductModal_<?php echo $product['id']; ?>"
@@ -271,6 +286,20 @@
                                             
                                         </select>
                                     </div>
+                                    <div class="mb-3">
+                                        <label for="categories" class="form-label">Product Status</label>
+                                        <select class="form-select" id="status" name="status">
+                                            <option value="On Sale"
+                                                <?php if ($product['status'] === 'On Sale') echo 'selected'; ?>>
+                                                On Sale</option>
+                                            <option value="Pre Order"
+                                                <?php if ($product['status'] === 'Pre Order') echo 'selected'; ?>>
+                                                Pre Order</option>
+                                            <option value="Sold"
+                                                <?php if ($product['status'] === 'Sold') echo 'selected'; ?>>
+                                                Sold</option>
+                                        </select>
+                                    </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"
                                             data-bs-dismiss="modal">Close</button>
@@ -327,7 +356,7 @@
                                         <input type="file" class="form-control" id="image" name="image">
                                     </div>
                                     <div class="row">
-                                        <div class="col-md-9">
+                                        <div class="col-md-5">
                                             <div class="mb-3">
                                                 <label for="title" class="form-label">Product Title</label>
                                                 <input type="text" class="form-control" id="title" name="title"">
@@ -344,7 +373,37 @@
                                                 </select>  
                                             </div>
                                         </div>
-                                    </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label for="status" class="form-label">Status</label>
+                                                <select class="form-control" name="status" id="ProductStatus" required onchange="toggleHarvestTime()">
+                                                    <option selected disabled>-- Select Status --</option>
+                                                    <option value="On Sale">On Sale</option>
+                                                    <option value="Pre Order">Pre Order</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3" id="harvestTime">
+                                            <label for="harvestTime" class="form-label" id="harvestlabel">Harvest Time</label>
+                                            <input type="date" class="form-control" id="harvestTimeInput" name="harvestTime" disabled>
+                                        </div>
+
+                                        <script>
+                                            function toggleHarvestTime() {
+                                                var statusDropdown = document.getElementById('ProductStatus');
+                                                var harvestTimeInput = document.getElementById('harvestTimeInput'); // Changed the ID here
+                                                var harvestlabel = document.getElementById('harvestlabel');
+                                                if (statusDropdown.value === 'Pre Order') {
+                                                    harvestTimeInput.disabled = false; // Enable the input
+                                                    harvestTimeInput.style.display = 'block'; // Show the input
+                                                } else {
+                                                    harvestTimeInput.disabled = true; // Disable the input
+                                                    harvestTimeInput.style.display = 'none'; // Hide the input
+                                                    harvestlabel.style.display = 'none';
+                                                }
+                                            }
+                                        </script>
                                     <div class="mb-3">
                                         <label for="description" class="form-label">Product Description</label>
                                         <textarea class="form-control" id="description" name="description"></textarea>
@@ -388,5 +447,15 @@
     integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
 </script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+  const menuButton = document.getElementById('menu-sm-screen');
+  const navSide = document.querySelector('.navside');
 
+  menuButton.addEventListener('click', function () {
+    navSide.classList.toggle('active');
+  });
+});
+
+</script>
 </html>

@@ -15,11 +15,11 @@
 ?>
 <html>
 <body class="justify-content-center">
-    <div class="position-bottom-right">
+    <!-- <div class="position-bottom-right">
         <a href="cart.php" class="btn btn-primary text-decoration-none border-0" id="cart-button">
             <i class='bx bxs-cart'></i>
         </a>
-    </div>
+    </div> -->
 
     <div class="wrapper w-100">
         <nav class="d-flex justify-content-between align-items-center flex-wrap">
@@ -29,8 +29,8 @@
             <div class="menu">
                 <ul class="d-flex align-items-center list-unstyled gap-5 m-0">
                     <li><a href="index.php" target="_self">Home</a></li>
-                    <li><a href="#sidebar" target="_self">Product</a></li>
-                    
+                    <li><a href="index.php#sidebar" target="_self">Products</a></li>
+                    <li><a href="services.php" target="_self">Services</a></li>
                     <li><a href="about.php" target="_self" class="active">About</a></li>
                     <?php
                         getLogin();
@@ -58,19 +58,15 @@
         <div class="col-md-6 col-sm-6">
             <div class="text-center p-4" style="margin-top: 3em;">
             <img src="./img/weoffer1.png" style="width: 20em; height:auto;">
-            <h2>SAUD: Marketplace of Banco Santiago de Libon</h2>
-            <h5>At SAUD, we are dedicated to transforming the way you experience agriculture. 
-                As a unique marketplace backed by Banco Santiago de Libon, 
-                we take pride in bridging the gap between farmers and consumers, bringing the bounty of the land directly to your fingertips.</h5>
+            <h2>PRODUCTS</h2>
+            <h5>Offers freshly picked products from the farm.</h5>
             </div>
         </div>
         <div class="col-md-6 col-sm-6">
             <div class="text-center p-4" style="margin-top: 3em;">
             <img src="./img/weoffer2.png" style="width: 20em; height:auto;">
-            <h2>SAUD: Marketplace of Banco Santiago de Libon</h2>
-            <h5>At SAUD, we are dedicated to transforming the way you experience agriculture. 
-                As a unique marketplace backed by Banco Santiago de Libon, 
-                we take pride in bridging the gap between farmers and consumers, bringing the bounty of the land directly to your fingertips.</h5>
+            <h2>Services</h2>
+            <h5>Handy Man services</h5>
             </div>
         </div>
     </div>

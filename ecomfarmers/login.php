@@ -20,6 +20,9 @@ if (isset($_POST['submit'])) {
             $_SESSION['loggedin'] = true;
             $_SESSION['username'] = $username;
             $_SESSION['usertype'] = $row['usertype'];
+            $_SESSION['id'] = $row['id'];
+            $_SESSION['fullname'] = $row['fullname'];
+
 
             if ($row['usertype'] == 'Admin') {
                 header("location: backend/dashboard.php");

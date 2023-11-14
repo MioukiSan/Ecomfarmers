@@ -7,7 +7,7 @@
 <body>
     <div class="container-fluid">
         <div class="row flex-nowrap">
-            <div class="col-12 col-xl-2">
+            <div class="col-12 col-xl-2 navside">
                 <div
                     class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100 bg">
                     <div class="d-flex">
@@ -16,6 +16,7 @@
                             class="d-flex align-items-center mb-md-0 me-md-auto text-white text-decoration-none">
                             <span class="fw-bold"><?php echo "Welcome, ", $_SESSION['username']; ?></span>
                         </a>
+                        <button class="btn text-center menubut" id="menu-sm-screen"><i class='bx bx-menu bx-md' style='color:#ffffff'  ></i></button>
                     </div>
                     <hr>
                     <ul class="nav nav-pills flex-column mb-auto w-100">
@@ -34,10 +35,14 @@
                                 <i class="bx bxl-product-hunt me-2"></i>Product Management
                             </a>
                         </li>
-                        
+                        <li class="nav-item">
+                            <a href="service.php" class="nav-link link-light">
+                                <i class="bx bx-bulb me-2"></i>Service Management
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a href="sales.php" class="nav-link link-light">
-                                <i class="bx bxs-cart me-2"></i>Sales & Transaction
+                                <i class="bx bxs-cart me-2"></i>Sales Report
                             </a>
                         </li>
                         <li class="nav-item">
@@ -45,9 +50,14 @@
                                 <i class='bx bxs-bookmark me-2'></i>Order Management
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="service_avail.php" class="nav-link link-light">
+                                <i class='bx bxs-hard-hat me-2'></i>Service Avail Management
+                            </a>
+                        </li>
                     </ul>
                     <hr>
-                    <div class="dropdown">
+                    <div class="dropdown drop">
                         <a href="#"
                             class="d-flex align-items-center text-white text-decoration-none dropdown-toggle ms-2"
                             id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
@@ -64,26 +74,36 @@
                     </div>
                 </div>
             </div>
-
             <?php
-                function fetchDataWithJoin($conn) {
-                    $query = "SELECT p.ID, b.Fullname, p.ProductName, p.Quantity, p.Total, p.Status
-                    FROM products p
-                    INNER JOIN billing b ON p.BillingID = b.ID";
-                    
-                    $result = $conn->query($query);
-                    $data = array();
-                    
-                    while ($row = $result->fetch_assoc()) {
-                        $data[] = $row;
-                    }
-                    
-                    return $data;
+            function fetchDataWithJoin($conn, $statusFilter = null) {
+                $query = "SELECT p.ID, b.Fullname, p.ProductName, p.Quantity, p.Total, p.Status
+                        FROM products p
+                        INNER JOIN billing b ON p.BillingID = b.ID
+                        WHERE p.Total !='Pre Order'";
+
+                if ($statusFilter !== null) {
+                    $query .= " WHERE p.Status = '$statusFilter'";
                 }
 
-                $joinedData = fetchDataWithJoin($conn);
+                $result = $conn->query($query);
+                $data = array();
 
-                $statusOptions = ['Ordered', 'In Delivery', 'Delivered', 'Canceled'];
+                while ($row = $result->fetch_assoc()) {
+                    $data[] = $row;
+                }
+
+                return $data;
+            }
+
+            $joinedData = fetchDataWithJoin($conn);
+
+            $statusOptions = ['Ordered', 'In Delivery', 'Delivered', 'Canceled'];
+
+            $statusFilter = 0;
+            if (isset($_POST['filterStatus'])) {
+                $statusFilter = $_POST['filterStatus'];
+                $joinedData = fetchDataWithJoin($conn, $statusFilter);
+            }
             ?>
 
             <!-- Main Content -->
@@ -93,7 +113,21 @@
                     <hr>
                     <div class="row">
                         <div class="col">
-                            <div class="table table-responsive">
+                            <!-- filter dropdown button -->
+                            <form action="" method="POST">
+                                <div class="mb-3" style="width: 10%;">
+                                    <select class="form-select" name="filterStatus" id="filterStatus" onchange="this.form.submit()">
+                                        <option value="NULL">All</option>
+                                        <?php foreach ($statusOptions as $statusOption) { ?>
+                                            <option value="<?= $statusOption; ?>" <?= ($statusOption === $statusFilter) ? 'selected' : ''; ?>>
+                                                <?= $statusOption; ?>
+                                            </option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                            </form>
+
+                            <div class="table-responsive">
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
@@ -107,28 +141,24 @@
                                     </thead>
                                     <tbody>
                                         <?php foreach ($joinedData as $product) { ?>
-                                        <tr>
-                                            <td><?= $product['Fullname']; ?></td>
-                                            <td><?= $product['ProductName']; ?></td>
-                                            <td><?= $product['Quantity']; ?></td>
-                                            <td><?= $product['Total']; ?></td>
-                                            <td>
-                                                <select class="form-select" name="status"
-                                                    id="status<?= $product['ID']; ?>"
-                                                    onchange="updateStatus(<?= $product['ID']; ?>, this)">
-                                                    <?php foreach ($statusOptions as $statusOption) { ?>
-                                                    <option value="<?= $statusOption; ?>"
-                                                        <?= ($statusOption === $product['Status']) ? 'selected' : ''; ?>>
-                                                        <?= $statusOption; ?>
-                                                    </option>
-                                                    <?php } ?>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <a href="order_delete.php?id=<?= $product['ID']; ?>"
-                                                    class="btn btn-danger">Delete</a>
-                                            </td>
-                                        </tr>
+                                            <tr>
+                                                <td><?= $product['Fullname']; ?></td>
+                                                <td><?= $product['ProductName']; ?></td>
+                                                <td><?= $product['Quantity']; ?></td>
+                                                <td><?= $product['Total']; ?></td>
+                                                <td>
+                                                    <select class="form-select" name="status" id="status<?= $product['ID']; ?>" onchange="updateStatus(<?= $product['ID']; ?>, this)">
+                                                        <?php foreach ($statusOptions as $statusOption) { ?>
+                                                            <option value="<?= $statusOption; ?>" <?= ($statusOption === $product['Status']) ? 'selected' : ''; ?>>
+                                                                <?= $statusOption; ?>
+                                                            </option>
+                                                        <?php } ?>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <a href="order_delete.php?id=<?= $product['ID']; ?>" class="btn btn-danger">Delete</a>
+                                                </td>
+                                            </tr>
                                         <?php } ?>
                                     </tbody>
                                 </table>
@@ -141,6 +171,7 @@
     </div>
 
 </body>
+
 <!-- Include the necessary JavaScript file -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
@@ -168,7 +199,15 @@ function updateStatus(productId, statusSelect) {
     });
 }
 </script>
-</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+  const menuButton = document.getElementById('menu-sm-screen');
+  const navSide = document.querySelector('.navside');
 
+  menuButton.addEventListener('click', function () {
+    navSide.classList.toggle('active');
+  });
+});
 
+</script>
 </html>

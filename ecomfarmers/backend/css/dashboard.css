@@ -36,6 +36,9 @@ html {
   width: 18rem;
   padding: 0;
 }
+.menubut {
+  display: none;
+}
 .container-fluid .dropdown {
   margin-bottom: 1rem;
 }
@@ -46,4 +49,40 @@ html {
 }
 .container-fluid .table {
   width: 75rem;
+}
+@media only screen and (max-width: 600px) {
+  .container-fluid .col-xl-2 {
+    width: 3rem;
+    padding: 0;
+    z-index: 10;
+  }
+  .navside a, .logoo, .drop, span, .logo {
+    display: none;
+  }
+  .menubut {
+    display: block;
+  }
+
+  .navside.active {
+    width: 18rem;
+    padding: 0;
+    z-index: 10;
+    display: block;
+  }
+
+  .navside.active a,
+  .navside.active .logoo,
+  .navside.active .drop,
+  .navside.active span,
+  .navside.active .logo {
+    display: block;
+  }
+
+  .menubut {
+    display: block;
+  }
+
+  .menubut.active {
+    display: none;
+  }
 }

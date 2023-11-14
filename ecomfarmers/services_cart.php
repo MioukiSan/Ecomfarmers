@@ -2,7 +2,7 @@
     session_start();
     $title = "cart";
     include 'components/header.php';
-
+    $idACCOUNT = $_SESSION['id'];
     function getUsername() {
         if(!isset($_SESSION['username'])) {
           header('Location: login.php');
@@ -18,6 +18,28 @@
             echo '<li><a href="login.php" class="btn btn-primary">Login</a></li>';
         }
     }
+
+    if (isset($_POST['checkout'])) {
+        $id = $_POST['ID'];
+    
+        $getCheck = "SELECT avail_id FROM availed_service WHERE account_id = $id";
+        $getCheckres = mysqli_query($conn, $getCheck);
+    
+        while ($row = mysqli_fetch_assoc($getCheckres)) {
+            $avail_id = $row['avail_id'];
+    
+            if (!empty($avail_id)) {
+                $updateSql = "UPDATE availed_service SET avail_status = 'Ordered' WHERE avail_id = $avail_id";
+                $updateResult = mysqli_query($conn, $updateSql);
+    
+                if ($updateResult) {
+                    echo '<script>alert("Checkout successful!");</script>';
+                } else {
+                    echo "Error updating avail_status: " . mysqli_error($conn);
+                }
+            }
+        }
+    }    
 ?>
 
 <body>
@@ -35,8 +57,8 @@
             <div class="menu">
                 <ul class="d-flex align-items-center list-unstyled gap-5 m-0">
                     <li><a href="index.php" target="_self" class="active">Home</a></li>
-                    <li><a href="index.php#sidebar" target="_self">Product</a></li>
-                    <li><a href="services.php" target="_self">Other Services</a></li>
+                    <li><a href="index.php#sidebar" target="_self">Products</a></li>
+                    <li><a href="services.php" target="_self">Services</a></li>
                     <li><a href="about.php" target="_self">About</a></li>
                     <?php
                         getLogin();
@@ -47,15 +69,13 @@
     </div>
 
     <?php
-        if (!isset($_SESSION['cart'])) {
-            $_SESSION['cart'] = [];
-        }
 
         if (isset($_GET['services_id'])) {
             $servicesID = intval($_GET['services_id']);
 
             global $conn;
 
+            // Fetch service details
             $sql = "SELECT * FROM services WHERE id = ?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("i", $servicesID);
@@ -65,168 +85,97 @@
             if ($result->num_rows > 0) {
                 $services = $result->fetch_assoc();
 
-                $cartItem = [
-                    'id' => $services['id'],
-                    'name' => $services['title'],
-                    'price' => $services['price'],
-                    'quantity' => 1
-                ];
+                // Check if the service is already availed by the user
+                $checkSql = "SELECT * FROM availed_service WHERE service_id = '{$services['id']}' AND account_id = {$_SESSION['id']}";
+                $checkResult = $conn->query($checkSql);
 
-                if (isset($_SESSION['cart'][$servicesID])) {
-                    $_SESSION['cart'][$servicesID]['quantity']++;
+                if ($checkResult->num_rows == 0) {
+                    $service_avail_ref = generateReference();
+
+                    // Insert into availed_service table
+                    $insertSql = "INSERT INTO availed_service (service_avail_ref, service_id, avail_status, account_id) VALUES ('$service_avail_ref', '{$services['id']}', 'cart', '{$_SESSION['id']}')";
+                    
+                    if ($conn->query($insertSql)) {
+                        // Service added to availed_service table successfully
+                    } else {
+                        // Error inserting into availed_service table
+                    }
                 } else {
-                    $_SESSION['cart'][$servicesID] = $cartItem;
+                    // Service is already availed, handle accordingly
                 }
             }
         }
-    ?>
 
+        // Function to generate a reference (replace this with your own logic)
+        function generateReference() {
+            // Your logic to generate a unique reference
+            return "REF_" . uniqid();
+        }
+
+    ?>
     <div class="container mt-5">
-        <h1 class="text-center fw-bolder mb-5">Shopping Cart</h1>
+        <h1 class="text-center fw-bolder mb-5">Service Cart</h1>
         <table class="table">
             <thead>
                 <tr>
                     <th>Product</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Total</th>
+                    <th>Price Range</th>
+                    <th>Date of Service</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 <?php
-                    $totalPrice = 0;
-                    if (!empty($_SESSION['cart'])) {
-                        foreach ($_SESSION['cart'] as $servicesID => $cartItem) {
-                            $name = $cartItem['name'];
-                            $price = $cartItem['price'];
-                            $quantity = $cartItem['quantity'];
-                            $total = $price * $quantity;
-                            $totalPrice += $total;
-                    ?>
-                <tr>
-                    <td><?= $name ?></td>
-                    <td>₱ <?= number_format($price, 2) ?></td>
-                    <td>
-                        <div class="input-group">
-                            <input type="number" class="form-control text-center quantity-input"
-                                value="<?= $quantity ?>" data-product-id="<?= $servicesID ?>">
-                        </div>
-                    </td>
-                    <td class="product-total">₱ <?= number_format($total, 2) ?></td>
-                    <td><a href="cart_remove.php?product_id=<?= $servicesID ?>"><i class="bx bx-trash"></i></a></td>
-                </tr>
-                <?php
-                }
-            } else {
-                echo '<tr><td colspan="5">Your cart is empty.</td></tr>';
-            }
-            ?>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="3" class="text-end">Total:</td>
-                    <td>₱ <?= number_format($totalPrice, 2) ?></td>
-                    <td></td>
-                </tr>
-            </tfoot>
-        </table>
+                $sqlGET = "SELECT a.avail_id, a.service_id, a.date, a.avail_status, s.title, s.service_price_range FROM availed_service a 
+                        LEFT JOIN services s ON s.id = a.service_id
+                        WHERE a.avail_status = 'cart'";
+                $sqlGETres = mysqli_query($conn, $sqlGET);
 
+                if ($sqlGETres && mysqli_num_rows($sqlGETres) > 0) {
+                    foreach ($sqlGETres as $service) {
+                ?>
+                        <tr>
+                            <td><?= $service['title'] ?></td>
+                            <td>₱ <?= $service['service_price_range'] ?></td>
+                            <td>
+                                <div class="input-group">
+                                    <form action="update_date.php" method="POST" class="updateDateForm">
+                                        <input type="hidden" name="avail_id" value="<?php echo $service['avail_id'] ?>">
+                                        <input type="date" class="form-control text-center" value="<?php echo $service['date'] ?>" name="date" onchange="updateDate(this)">
+                                    </form>
+                                </div>
+                            </td>
+                            <td><a href="service_remove_cart.php?avail_id=<?= $service['avail_id'] ?>"><i class="bx bx-trash"></i></a></td>
+                        </tr>
+                <?php
+                    }
+                } else {
+                    echo '<tr><td colspan="4">Your cart is empty.</td></tr>';
+                }
+                ?>
+            </tbody>
+        </table>
         <div class="text-end">
-            <a href="services_checkout.php" class="btn btn-primary">Checkout</a>
-            <a href="index.php" class="btn btn-success">Continue to Shopping</a>
+            <form action="" method="POST">
+                <input type="hidden" name="ID" value="<?php echo $idACCOUNT ?>">
+                <button type="submit" name="checkout" class="btn btn-primary">Checkout</button>
+                <a href="index.php" class="btn btn-success">Continue Shopping</a>
+            </form>
         </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-    $(document).ready(function() {
-        initializeQuantities();
-        startPolling();
-
-        $(".quantity-input").on("input", function() {
-            var servicesID = $(this).data("services-id");
-            var newQuantity = $(this).val();
-            updateCartQuantity(servicesID, newQuantity);
-        });
-
-        $(".update-link").on("click", function(event) {
-            event.preventDefault();
-            var servicesID = $(this).data("services-id");
-            var newQuantity = prompt("Enter new quantity:",
-                ""); // Use a prompt or another UI method to get the new quantity
-            if (newQuantity !== null) {
-                updateCartQuantity(servicesID, newQuantity);
-            }
-        });
-
-        function initializeQuantities() {
-            $(".quantity-input").each(function() {
-                var servicesID = $(this).data("services-id");
-                var initialQuantity = $(this).val();
-                setInitialQuantity(servicesID, initialQuantity);
-            });
-        }
-
-        function startPolling() {
-            setInterval(function() {
-                updateCartQuantities();
-            }, 500); // Polling interval in milliseconds (e.g., 5 seconds)
-        }
-
-        function updateCartQuantities() {
-            $(".quantity-input").each(function() {
-                var servicesID = $(this).data("services-id");
-                var initialQuantity = getInitialQuantity(servicesID);
-                var currentQuantity = $(this).val();
-
-                if (currentQuantity !== initialQuantity) {
-                    updateCartQuantity(servicesID, currentQuantity);
-                }
-            });
-        }
-
-        function getInitialQuantity(servicesID) {
-            return localStorage.getItem(`services_${servicesID}_quantity`);
-        }
-
-        function setInitialQuantity(servicesID, initialQuantity) {
-            localStorage.setItem(`services_${servicesID}_quantity`, initialQuantity);
-        }
-
-        function updateCartQuantity(servicesID, newQuantity) {
-            $.ajax({
-                method: "POST",
-                url: "cart_quantity.php",
-                data: {
-                    product_id: servicesID,
-                    new_quantity: newQuantity
-                },
-                success: function(response) {
-                    var responseData = JSON.parse(response);
-                    updateProductTotal(servicesID, responseData.product_total);
-                    updateTotalPrice(responseData.total_price);
-                    updateQuantityInput(servicesID, newQuantity);
-                    setInitialQuantity(servicesID, newQuantity);
-                }
-            });
-        }
-
-        function updateProductTotal(servicesID, newTotal) {
-            $(`tr[data-product-id="${servicesID}"] .product-total`).text(`$${newTotal.toFixed(2)}`);
-        }
-
-        function updateTotalPrice(newTotal) {
-            $(".total-price").text(`$${newTotal.toFixed(2)}`);
-        }
-
-        function updateQuantityInput(servicesID, newQuantity) {
-            $(`input[data-product-id="${servicesID}"]`).val(newQuantity);
-        }
-    });
-    </script>
 
 </body>
+
+<script>
+    function updateDate(input) {
+        // Assuming the form has an ID of "updateDateForm"
+        var form = input.closest('.updateDateForm');
+        // Trigger the form submission
+        form.submit();
+    }
+</script>
 
 </html>

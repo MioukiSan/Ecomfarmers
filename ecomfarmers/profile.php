@@ -27,8 +27,8 @@
             <div class="menu">
                 <ul class="d-flex align-items-center list-unstyled gap-5 m-0">
                     <li><a href="index.php" target="_self">Home</a></li>
-                    <li><a href="index.php#sidebar" target="_self">Product</a></li>
-                   
+                    <li><a href="index.php#sidebar" target="_self">Products</a></li>
+                    <li><a href="services.php" target="_self">Services</a></li>
                     <li><a href="about.php" target="_self">About</a></li>
                     <?php
                         getLogin();
@@ -68,7 +68,14 @@
         <div class="card">
             <div class="card-header d-flex justify-content-between">
                 <h2 class="fw-bolder">User Profile</h2>
-                <button type="button" onclick="window.location.href='order_history.php'" class="btn btn-success">Order History</button>
+                <div class="dropdown">
+                    <button class="btn btn-success" onclick="toggleDropdown()">History</button>
+                    <div class="dropdown-menu" id="historyDropdown" style="display: none;">
+                        <a class="dropdown-item" href="order_history.php">Order History</a>
+                        <a class="dropdown-item" href="service_avail_history.php">Service Availed History</a>
+                        <a class="dropdown-item" href="#">Pre Order</a>
+                    </div>
+                </div>
             </div>
             <div class="card-body">
                 <?php
@@ -93,3 +100,19 @@
     </div>
 
 </body>
+<script>
+    function toggleDropdown() {
+        var dropdown = document.getElementById("historyDropdown");
+        dropdown.style.display = (dropdown.style.display === 'none') ? 'block' : 'none';
+    }
+
+    // Close the dropdown if the user clicks outside of it
+    window.onclick = function (event) {
+        if (!event.target.matches('.btn-success')) {
+            var dropdown = document.getElementById("historyDropdown");
+            if (dropdown.style.display === 'block') {
+                dropdown.style.display = 'none';
+            }
+        }
+    }
+</script>

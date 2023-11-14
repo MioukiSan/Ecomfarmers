@@ -33,8 +33,8 @@
             <div class="menu">
                 <ul class="d-flex align-items-center list-unstyled gap-5 m-0">
                     <li><a href="index.php" target="_self" class="active">Home</a></li>
-                    <li><a href="#sidebar" target="_self">Product</a></li>
-                    <li><a href="service.php" target="_self">Service</a></li>
+                    <li><a href="#sidebar" target="_self">Products</a></li>
+                    <li><a href="services.php" target="_self">Services</a></li>
                     
                     <li><a href="about.php" target="_self">About</a></li>
                     <?php
@@ -71,7 +71,7 @@
             $whereClause = "WHERE " . implode(" OR ", $categoryConditions);
         }
 
-        $sql = "SELECT id, image, title, description, price, quantity, unit FROM product_list $whereClause";
+        $sql = "SELECT id, image, title, description, price, quantity, unit, harvest, status FROM product_list WHERE status != 'Sold' $whereClause";
         $result = $conn->query($sql);
 
         $products = [];
@@ -110,11 +110,11 @@
                                 alt="<?php echo $product['title']; ?>">
                             <div class="card-body">
                                 <!-- <h5 class="card-title fw-bolder"><?php echo $product['title']; ?></h5> -->
-                                <div class="d-flex justify-content-between">
-                                    <div class="col-md-7">
+                                <div class="d-sm-flex">
+                                    <div class="col-md-6">
                                         <h5 class="card-title fw-bolder"><?php echo $product['title']; ?></h5>
                                     </div>
-                                    <div class="col-md-5">
+                                    <div class="col-md-6">
                                         <p class="card-text price">₱ <?php echo $product['price'] .'/'. $product['unit']; ?></p>
                                     </div>
                                 </div>
@@ -122,8 +122,17 @@
                                 <!-- <p class="card-text price">₱ <?php echo $product['price'] .'/'. $product['unit']; ?></p> -->
                                 <form action="cart.php" method="get">
                                     <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
-                                    <button type="submit" class="btn btn-primary border-0" name="submit">Add to
-                                        Cart</button>
+                                    <div class="text-center">
+                                        <?php if($product['status'] === 'On Sale'){ ?>
+                                        <button type="submit" class="btn btn-primary border-0" name="submit">Add to
+                                            Cart</button>
+                                </form>
+                                <form action="" method="POST">
+                                    <?php } elseif($product['status'] === 'Pre Order') { ?>
+                                        <p><?php echo 'harvest Date:' . $product['harvest'] ?></p>
+                                        <button class="btn btn-primary border-0" name="preorder" type="submit">Pre Order</button>
+                                        <?php } ?>
+                                    </div>
                                 </form>
                             </div>
                         </div>

@@ -20,6 +20,7 @@
                             class="d-flex align-items-center mb-md-0 me-md-auto text-white text-decoration-none">
                             <span class="fw-bold"><?php echo "Welcome, ", $_SESSION['username']; ?></span>
                         </a>
+                        <button class="btn text-center menubut" id="menu-sm-screen"><i class='bx bx-menu bx-md' style='color:#ffffff'  ></i></button>
                     </div>
                     <hr>
                     <ul class="nav nav-pills flex-column mb-auto w-100">
@@ -38,7 +39,11 @@
                                 <i class="bx bxl-product-hunt me-2"></i>Product Management
                             </a>
                         </li>
-                       
+                        <li class="nav-item">
+                            <a href="service.php" class="nav-link link-light">
+                                <i class="bx bx-bulb me-2"></i>Service Management
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a href="sales.php" class="nav-link link-light">
                                 <i class="bx bxs-cart me-2"></i>Sales Report
@@ -50,13 +55,13 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="order.php" class="nav-link link-light">
+                            <a href="service_avail.php" class="nav-link link-light">
                                 <i class='bx bxs-hard-hat me-2'></i>Service Avail Management
                             </a>
                         </li>
                     </ul>
                     <hr>
-                    <div class="dropdown">
+                    <div class="dropdown drop">
                         <a href="#"
                             class="d-flex align-items-center text-white text-decoration-none dropdown-toggle ms-2"
                             id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
@@ -139,5 +144,15 @@ $cardInfo = array(
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+  const menuButton = document.getElementById('menu-sm-screen');
+  const navSide = document.querySelector('.navside');
 
+  menuButton.addEventListener('click', function () {
+    navSide.classList.toggle('active');
+  });
+});
+
+</script>
 </html>

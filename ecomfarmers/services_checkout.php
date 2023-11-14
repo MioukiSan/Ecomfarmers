@@ -48,10 +48,8 @@ function getLogin() {
         <table class="table">
             <thead>
                 <tr>
-                    <th>Product</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Total</th>
+                    <th>Service</th>
+                    <th>Price Range</th>
                 </tr>
             </thead>
             <tbody>
