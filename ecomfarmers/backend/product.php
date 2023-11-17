@@ -9,11 +9,37 @@
         $description = $_POST['description'];
         $price = $_POST['price'];
         $quantity = $_POST['quantity'];
-        $category = $_POST['categories'];
         $unit = $_POST['unit'];
         $status = $_POST['status']; // Add this line for the new 'status' column
         $harvestTime = ($status == 'Pre Order') ? $_POST['harvestTime'] : null; // Add this line for 'harvest time'
-    
+        
+        if ($_POST['category'] === 'new') {
+            $category = $_POST['customCategory'];
+        
+            // Check if the category already exists
+            $checkCategoryQuery = "SELECT * FROM categories WHERE cat_name = ?";
+            $checkCategoryStmt = $conn->prepare($checkCategoryQuery);
+            $checkCategoryStmt->bind_param("s", $category);
+            $checkCategoryStmt->execute();
+            $checkCategoryResult = $checkCategoryStmt->get_result();
+        
+            if ($checkCategoryResult->num_rows == 0) {
+                // Category doesn't exist, insert it
+                $insertCatQuery = "INSERT INTO categories (cat_name) VALUES (?)";
+                $insertCatStmt = $conn->prepare($insertCatQuery);
+                $insertCatStmt->bind_param("s", $category);
+        
+                if ($insertCatStmt->execute()) {
+                    // Category inserted successfully, proceed with the rest of the code
+                } else {
+                    echo "<script>alert('Error inserting new category.'); window.location.href='product.php';</script>";
+                    exit(); // Exit the script to avoid executing the rest of the code
+                }
+            }
+        } else {
+            $category = $_POST['category'];
+        }
+
         $targetDir = '../img/';
         $targetFile = $targetDir . basename($image);
         $uploadOk = 1;
@@ -49,7 +75,7 @@
             echo "<script>alert('Sorry, your file was not uploaded, file already exists.'); window.location.href='product.php';</script>";
         } else {
             if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
-    
+                
                 // Prepare and execute the SQL query
                 $sql = "INSERT INTO `product_list` (`image`, `title`, `description`, `price`, `quantity`, `categories`, `unit`, `status`, `harvest`) 
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -268,22 +294,18 @@
                                     <div class="mb-3">
                                         <label for="categories" class="form-label">Product Categories</label>
                                         <select class="form-select" id="categories" name="categories">
-                                            <option value="Vegetables"
-                                                <?php if ($product['categories'] === 'Vegetables') echo 'selected'; ?>>
-                                                Vegetables</option>
-                                            <option value="Fish"
-                                                <?php if ($product['categories'] === 'Fish') echo 'selected'; ?>>
-                                                Fish</option>
-                                            <option value="Meats"
-                                                <?php if ($product['categories'] === 'Meats') echo 'selected'; ?>>
-                                                Meats</option>
-                                            <option value="Rice"
-                                                <?php if ($product['categories'] === 'Rice') echo 'selected'; ?>>
-                                                Rice</option>
-                                            <option value="Fruit"
-                                                <?php if ($product['categories'] === 'Fruit') echo 'selected'; ?>>
-                                                Fruit</option>
-                                            
+                                            <?php
+                                            $q = "SELECT * FROM categories";
+                                            $qq = mysqli_query($conn, $q);
+
+                                            foreach ($qq as $r) {
+                                                $catname = $r['cat_name'];
+                                                $selected = ($product['categories'] === $catname) ? 'selected' : '';
+                                                ?>
+                                                <option value="<?php echo $catname ?>" <?php echo $selected ?>><?php echo $catname ?></option>
+                                                <?php
+                                            }
+                                            ?>
                                         </select>
                                     </div>
                                     <div class="mb-3">
@@ -418,14 +440,39 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="categories" class="form-label">Product Categories</label>
-                                        <select class="form-select" id="categories" name="categories">
-                                            <option value="Vegetables">Vegetables</option>
-                                            <option value="Fish">Fish</option>
-                                            <option value="Meats">Meats</option>
-                                            <option value="Rice">Rice</option>
-                                            <option value="Fruit">Fruit</option>
-                                           
+                                        <select class="form-select" id="item_category" name="category" required onchange="showCustomInput()">
+                                            <option value="">Select an item category...</option>
+                                            <?php
+                                            $q = "SELECT * FROM categories";
+                                            $qq = mysqli_query($conn, $q);
+
+                                            foreach($qq as $r){
+                                                $catname = $r['cat_name'];
+                                                ?>
+                                                <option value="<?php echo $catname ?>"><?php echo $catname ?></option>
+                                                <?php
+                                            }
+                                            ?>
+                                            <option value="new">Custom</option>
                                         </select>
+
+                                        <div id="customInput" style="display: none;">
+                                            <label for="customCategory" class="form-label">Custom Category:</label>
+                                            <input type="text" id="customCategory" name="customCategory" class="form-control">
+                                        </div>
+
+                                        <script>
+                                            function showCustomInput() {
+                                                var selectedValue = document.getElementById("item_category").value;
+                                                var customInputDiv = document.getElementById("customInput");
+
+                                                if (selectedValue === "new") {
+                                                    customInputDiv.style.display = "block";
+                                                } else {
+                                                    customInputDiv.style.display = "none";
+                                                }
+                                            }
+                                        </script>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"

@@ -75,35 +75,34 @@
                 </div>
             </div>
             <?php
-            function fetchDataWithJoin($conn, $statusFilter = null) {
-                $query = "SELECT p.ID, b.Fullname, p.ProductName, p.Quantity, p.Total, p.Status
-                        FROM products p
-                        INNER JOIN billing b ON p.BillingID = b.ID
-                        WHERE p.Total !='Pre Order'";
+                function fetchDataWithJoin($conn, $statusFilter = null) {
+                    $query = "SELECT BillingID, MIN(Status) AS Status
+                            FROM products
+                            GROUP BY BillingID";
 
-                if ($statusFilter !== null) {
-                    $query .= " WHERE p.Status = '$statusFilter'";
+                    if ($statusFilter !== null && $statusFilter !== 'NULL') {
+                        $query .= " HAVING Status = '$statusFilter'";
+                    }
+
+                    $result = $conn->query($query);
+                    $data = array();
+
+                    while ($row = $result->fetch_assoc()) {
+                        $data[] = $row;
+                    }
+
+                    return $data;
                 }
 
-                $result = $conn->query($query);
-                $data = array();
+                $joinedData = fetchDataWithJoin($conn);
 
-                while ($row = $result->fetch_assoc()) {
-                    $data[] = $row;
+                $statusOptions = ['Ordered', 'In Delivery', 'Delivered', 'Canceled'];
+
+                $statusFilter = 0;
+                if (isset($_POST['filterStatus'])) {
+                    $statusFilter = $_POST['filterStatus'];
+                    $joinedData = fetchDataWithJoin($conn, $statusFilter);
                 }
-
-                return $data;
-            }
-
-            $joinedData = fetchDataWithJoin($conn);
-
-            $statusOptions = ['Ordered', 'In Delivery', 'Delivered', 'Canceled'];
-
-            $statusFilter = 0;
-            if (isset($_POST['filterStatus'])) {
-                $statusFilter = $_POST['filterStatus'];
-                $joinedData = fetchDataWithJoin($conn, $statusFilter);
-            }
             ?>
 
             <!-- Main Content -->
@@ -115,7 +114,7 @@
                         <div class="col">
                             <!-- filter dropdown button -->
                             <form action="" method="POST">
-                                <div class="mb-3" style="width: 10%;">
+                                <div class="mb-3" style="width: 15%;">
                                     <select class="form-select" name="filterStatus" id="filterStatus" onchange="this.form.submit()">
                                         <option value="NULL">All</option>
                                         <?php foreach ($statusOptions as $statusOption) { ?>
@@ -126,28 +125,56 @@
                                     </select>
                                 </div>
                             </form>
-
                             <div class="table-responsive">
                                 <table class="table table-bordered">
                                     <thead>
-                                        <tr>
+                                        <tr class="text-center">
                                             <th>Customer Name</th>
-                                            <th>Product Name</th>
-                                            <th>Quantity</th>
-                                            <th>Total</th>
+                                            <th>Order Details</th>
+                                            <th>Payment Method</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php foreach ($joinedData as $product) { ?>
+                                        <?php foreach ($joinedData as $product) { 
+                                            $BillingID = $product['BillingID'];
+                                            $queryBillingdata = "SELECT * FROM billing WHERE id = $BillingID";
+                                            $BillingdataRes = mysqli_query($conn, $queryBillingdata);
+
+                                            foreach($BillingdataRes as $BillingData){ 
+                                        ?>
                                             <tr>
-                                                <td><?= $product['Fullname']; ?></td>
-                                                <td><?= $product['ProductName']; ?></td>
-                                                <td><?= $product['Quantity']; ?></td>
-                                                <td><?= $product['Total']; ?></td>
+                                                <td><?= $BillingData['Fullname']; ?></td>
                                                 <td>
-                                                    <select class="form-select" name="status" id="status<?= $product['ID']; ?>" onchange="updateStatus(<?= $product['ID']; ?>, this)">
+                                                    <div class="table responsive">
+                                                        <table class="table table-sm">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Product Name</th>
+                                                                    <th>Quantity</th>
+                                                                    <th>Total</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <?php
+                                                                    $queryOrderData = "SELECT * FROM products WHERE BillingID = $BillingID";
+                                                                    $OrderDataRes = mysqli_query($conn, $queryOrderData);
+                                                                    foreach($OrderDataRes as $OrderData){
+                                                                ?>
+                                                                    <tr>
+                                                                        <td><?= $OrderData['ProductName']; ?></td>
+                                                                        <td><?= $OrderData['Quantity']; ?></td>
+                                                                        <td><?= $OrderData['Total']; ?></td>
+                                                                    </tr>
+                                                                <?php } ?>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </td>
+                                                <td><?= $BillingData['PaymentMethod'] ?></td>
+                                                <td>
+                                                    <select class="form-select" name="status" id="status<?= $BillingID; ?>" onchange="updateStatus(<?= $BillingID; ?>, this)">
                                                         <?php foreach ($statusOptions as $statusOption) { ?>
                                                             <option value="<?= $statusOption; ?>" <?= ($statusOption === $product['Status']) ? 'selected' : ''; ?>>
                                                                 <?= $statusOption; ?>
@@ -156,10 +183,10 @@
                                                     </select>
                                                 </td>
                                                 <td>
-                                                    <a href="order_delete.php?id=<?= $product['ID']; ?>" class="btn btn-danger">Delete</a>
+                                                    <a href="order_delete.php?id=<?= $BillingID; ?>" class="btn btn-danger">Delete</a>
                                                 </td>
                                             </tr>
-                                        <?php } ?>
+                                        <?php } } ?>
                                     </tbody>
                                 </table>
                             </div>

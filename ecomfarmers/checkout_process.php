@@ -10,13 +10,11 @@
         $location = $_POST['location'];
         $paymentMethod = $_POST['payment-method'];
         $status = 'Ordered';
-
+        $orderID = generateSalesTransactionCode($conn);
         // Check if contact number starts with "09" and has 11 digits
         if (preg_match('/^09\d{9}$/', $contact) !== 1) {
             echo "<script>alert('Contact number should start with 09 and have exactly 11 digits. Please provide a valid Philippine contact number.'); window.location.href='checkout.php'; </script>";
         } else {
-            // Generate a unique Order_ID
-            $orderID = generateSalesTransactionCode($conn);
 
             // Insert billing information into the database
             $insertBillingQuery = "INSERT INTO billing (Fullname, Email, Contact, address, Location, PaymentMethod, Order_ID)

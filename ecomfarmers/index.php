@@ -53,7 +53,22 @@
     </div> -->
 
     <?php
-        $categories = ["Vegetables", "Fish", "Meats", "Rice", "Fruit"];
+        $getCategoriesQuery = "SELECT cat_name FROM categories";
+        $getCategoriesStmt = $conn->prepare($getCategoriesQuery);
+        $getCategoriesStmt->execute();
+        $categoriesResult = $getCategoriesStmt->get_result();
+        
+        // Check if there are categories in the database
+        if ($categoriesResult->num_rows > 0) {
+            // Fetch categories into an associative array
+            $categories = [];
+            while ($row = $categoriesResult->fetch_assoc()) {
+                $categories[] = $row['cat_name'];
+            }
+        } else {
+            // Default categories if none found in the database
+            $categories = ["Vegetables", "Fish", "Meats", "Rice", "Fruit"];
+        }
 
         $selectedCategories = [];
         if (isset($_GET['category']) && is_array($_GET['category'])) {

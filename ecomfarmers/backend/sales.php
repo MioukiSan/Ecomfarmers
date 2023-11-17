@@ -108,11 +108,10 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <form action="" method="POST">
+                                        <form action="generate_sales_report.php" method="POST" target="_target">
                                             <div class="input-group">
                                                 <span class="input-group-text">This Date</span>
                                                 <input type="date" name="this_date" class="form-control" required>
-                                                <button type="submit" class="text-center btn btn-secondary" name="generatefi1">GENERATE</button>
                                             </div>
                                     </div>
                                     <div class="modal-footer">
@@ -131,13 +130,12 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <form action="" method="POST">
+                                        <form action="generate_sales_report.php" method="POST" target="_target">
                                         <div class="input-group mb-3">
                                             <span class="input-group-text">Between</span>
                                             <input type="date" name="start_date" class="form-control" required>
                                             <span class="input-group-text"> and </span>
                                             <input type="date" name="end_date" class="form-control" required>
-                                            <button type="submit" class="text-center btn btn-secondary" name="generatefi">GENERATE</button>
                                         </div>
                                     </div>
                                     <div class="modal-footer">

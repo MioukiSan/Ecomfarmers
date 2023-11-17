@@ -47,9 +47,9 @@ html {
   border-radius: 20px;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }
-.container-fluid .table {
+/* .container-fluid .table {
   width: 75rem;
-}
+} */
 @media only screen and (max-width: 600px) {
   .container-fluid .col-xl-2 {
     width: 3rem;
