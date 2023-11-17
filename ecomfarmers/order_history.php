@@ -52,35 +52,52 @@
             <div class="card-body">
             <?php
                 function fetchDataWithJoin($conn, $statusFilter = null) {
-                    $query = "SELECT p.ID, b.Fullname, p.ProductName, p.Quantity, p.Total, p.Status
+                    // Use prepared statement to prevent SQL injection
+                    $query = "SELECT p.BillingID, MIN(p.Status) AS Status, b.Fullname
                             FROM products p
-                            INNER JOIN billing b ON p.BillingID = b.ID
-                            WHERE b.Fullname = '" . $_SESSION['fullname'] . "'"; // Assuming 'fullname' is the key in your session data.
-                
-                    if ($statusFilter !== null) {
-                        $query .= " AND p.Status = '$statusFilter'";
+                            LEFT JOIN billing b ON p.BillingID = b.ID
+                            WHERE b.fullname = ?";
+
+                    if ($statusFilter !== null && $statusFilter !== 'NULL') {
+                        $query .= " AND p.Status = ?";
                     }
-                
-                    $result = $conn->query($query);
+
+                    $query .= " GROUP BY p.BillingID";
+
+                    $stmt = $conn->prepare($query);
+
+                    if ($statusFilter !== null && $statusFilter !== 'NULL') {
+                        $stmt->bind_param("ss", $_SESSION['fullname'], $statusFilter);
+                    } else {
+                        $stmt->bind_param("s", $_SESSION['fullname']);
+                    }
+
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    
                     $data = array();
-                
+
                     while ($row = $result->fetch_assoc()) {
                         $data[] = $row;
                     }
-                
+
+                    $stmt->close();
+
                     return $data;
                 }
-                
-                $joinedData = fetchDataWithJoin($conn);
-                
-                $statusOptions = ['Ordered', 'In Delivery', 'Delivered', 'Canceled'];
-                
-                $statusFilter = 0;
-                if (isset($_POST['filterStatus'])) {
-                    $statusFilter = $_POST['filterStatus'];
-                    $joinedData = fetchDataWithJoin($conn, $statusFilter);
-                }
-            ?>
+
+                    $joinedData = fetchDataWithJoin($conn);
+
+                    $statusOptions = ['Ordered', 'In Delivery', 'Delivered', 'Canceled'];
+
+                    $statusFilter = 0;
+                    if (isset($_POST['filterStatus'])) {
+                        // Validate and sanitize user input before using it in the query
+                        $statusFilter = $_POST['filterStatus'];
+                        $joinedData = fetchDataWithJoin($conn, $statusFilter);
+                    }
+                ?>
+
                 <div class="col-12 col-xl-12">
                         <div class="row">
                             <div class="col">
@@ -101,24 +118,53 @@
                                 <div class="table-responsive">
                                     <table class="table table-bordered">
                                         <thead>
-                                            <tr>
-                                                <th>Customer Name</th>
-                                                <th>Product Name</th>
-                                                <th>Quantity</th>
-                                                <th>Total</th>
+                                            <tr class="text-center">
+                                                <th>Order ID</th>
+                                                <th>Order Details</th>
+                                                <th>Payment Method</th>
                                                 <th>Status</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <?php foreach ($joinedData as $product) { ?>
-                                                <tr>
-                                                    <td><?= $product['Fullname']; ?></td>
-                                                    <td><?= $product['ProductName']; ?></td>
-                                                    <td><?= $product['Quantity']; ?></td>
-                                                    <td><?= $product['Total']; ?></td>
-                                                    <td><?= $product['Status'] ?></td>
+                                            <?php foreach ($joinedData as $product) { 
+                                                $BillingID = $product['BillingID'];
+                                                $queryBillingdata = "SELECT * FROM billing WHERE id = $BillingID";
+                                                $BillingdataRes = mysqli_query($conn, $queryBillingdata);
+
+                                                foreach($BillingdataRes as $BillingData){ 
+                                            ?>
+                                                <tr class="text-center">
+                                                    <td><?= $BillingData['Order_ID']; ?></td>
+                                                    <td>
+                                                        <div class="table responsive">
+                                                            <table class="table table-sm">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Product Name</th>
+                                                                        <th>Quantity</th>
+                                                                        <th>Total</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <?php
+                                                                        $queryOrderData = "SELECT * FROM products WHERE BillingID = $BillingID";
+                                                                        $OrderDataRes = mysqli_query($conn, $queryOrderData);
+                                                                        foreach($OrderDataRes as $OrderData){
+                                                                    ?>
+                                                                        <tr>
+                                                                            <td><?= $OrderData['ProductName']; ?></td>
+                                                                            <td><?= $OrderData['Quantity']; ?></td>
+                                                                            <td><?= $OrderData['Total']; ?></td>
+                                                                        </tr>
+                                                                    <?php } ?>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </td>
+                                                    <td><?= $BillingData['PaymentMethod'] ?></td>
+                                                    <td><?= $OrderData['Status'] ?></td>
                                                 </tr>
-                                            <?php } ?>
+                                            <?php } } ?>
                                         </tbody>
                                     </table>
                                 </div>
