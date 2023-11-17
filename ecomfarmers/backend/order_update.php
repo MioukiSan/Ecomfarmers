@@ -2,10 +2,11 @@
     include '../connect.php';
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $productId = $_POST['productId'];
+        $BillingID = $_POST['BillingID'];
         $newStatus = $_POST['status'];
 
-        $updateQuery = "UPDATE products SET Status = '$newStatus' WHERE ID = $productId";
+        // Update all products with the same BillingID
+        $updateQuery = "UPDATE products SET Status = '$newStatus' WHERE BillingID = $BillingID";
 
         if ($conn->query($updateQuery) === TRUE) {
             $response = array('success' => true, 'message' => 'Status updated successfully');

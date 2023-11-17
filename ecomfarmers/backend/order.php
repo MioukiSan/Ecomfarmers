@@ -206,14 +206,14 @@
 <!-- Include jQuery library if not already included -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-function updateStatus(productId, statusSelect) {
+function updateStatus(BillingID, statusSelect) {
     var selectedStatus = statusSelect.value;
 
     $.ajax({
         type: 'POST',
         url: 'order_update.php',
         data: {
-            productId: productId,
+            BillingID: BillingID,
             status: selectedStatus
         },
         dataType: 'json',
