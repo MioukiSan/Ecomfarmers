@@ -34,7 +34,6 @@
             <label for="toggle"><i class='bx bx-menu'></i></label>
             <div class="menu">
                 <ul class="d-flex align-items-center list-unstyled gap-5 m-0">
-                    <li><a href="index.php" target="_self" class="active">Home</a></li>
                     <li><a href="index.php#sidebar" target="_self">Products</a></li>
                     <li><a href="services.php" target="_self">Services</a></li>
                     <li><a href="about.php" target="_self">About</a></li>
@@ -82,7 +81,7 @@
                         <div class="input-group">
                             <input type="number" class="form-control text-center quantity-input"
                                 value="<?= $quantity ?>" data-product-id="<?= $productID ?>"
-                                data-acc-id="<?= $accID ?>" max="<?= $preorder['quantityProd'] ?>"
+                                data-acc-id="<?= $accID ?>" max="<?= $preorder['quantityProd'] ?>" min="1"
                                 onchange="updateQuantity(this)">
                         </div>
                     </td>       

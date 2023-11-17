@@ -73,7 +73,6 @@
                     </div>
                 </div>
             </div>
-
             <?php
 
                 // Fetch sales data (products) along with billing information using BillingID
@@ -84,12 +83,74 @@
 
             <!-- Main Content -->
             <div class="col-12 col-xl-10">
+                
                 <div class="col mt-4">
                     <h1 class="mb-4 text-uppercase fw-bolder">Sales Report</h1>
                     <hr>
                     <div class="row">
+                        <div class="col-md-4 mb-1 float-end">
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#selecttoprint"><i class='bx bxs-printer'></i>PRINT</button>
+                            <div class="modal fade" id="selecttoprint" aria-hidden="true" aria-labelledby="bodySelect" tabindex="-1">
+                                <div class="modal-dialog modal-dialog-centered modal-sm">
+                                    <div class="modal-content">
+                                        <div class="modal-body text-center">
+                                            <button class="btn btn-warning" data-bs-target="#specificdate" data-bs-toggle="modal">Specific Date</button>
+                                            <button class="btn btn-success" data-bs-target="#inbetween" data-bs-toggle="modal">Between Date</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal fade" id="specificdate" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="Specific" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="Specific">GENERATE SALES REPORT</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="" method="POST">
+                                            <div class="input-group">
+                                                <span class="input-group-text">This Date</span>
+                                                <input type="date" name="this_date" class="form-control" required>
+                                                <button type="submit" class="text-center btn btn-secondary" name="generatefi1">GENERATE</button>
+                                            </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" name="specific" class="btn btn-warning">GENERATE</button>
+                                        </form>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal fade" id="inbetween" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="between" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="between">GENERATE SALES REPORT</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="" method="POST">
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text">Between</span>
+                                            <input type="date" name="start_date" class="form-control" required>
+                                            <span class="input-group-text"> and </span>
+                                            <input type="date" name="end_date" class="form-control" required>
+                                            <button type="submit" class="text-center btn btn-secondary" name="generatefi">GENERATE</button>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" name="between" class="btn btn-success">GENERATE</button>
+                                        </form>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-light">
                                 <thead>
                                     <th>Billing ID</th>
                                     <th>Customer</th>

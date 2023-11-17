@@ -26,7 +26,6 @@
             <label for="toggle"><i class='bx bx-menu'></i></label>
             <div class="menu">
                 <ul class="d-flex align-items-center list-unstyled gap-5 m-0">
-                    <li><a href="index.php" target="_self">Home</a></li>
                     <li><a href="index.php#sidebar" target="_self">Products</a></li>
                     <li><a href="services.php" target="_self">Services</a></li>
                     <li><a href="about.php" target="_self">About</a></li>
@@ -45,8 +44,8 @@
                     <button class="btn btn-success" onclick="toggleDropdown()">History</button>
                     <div class="dropdown-menu" id="historyDropdown" style="display: none;">
                         <a class="dropdown-item" href="order_history.php">Order History</a>
-                        <a class="dropdown-item" href="#">Service Availed History</a>
-                        <a class="dropdown-item" href="#">Pre Order</a>
+                        <a class="dropdown-item" href="service_avail_history.php">Service Availed History</a>
+                        <a class="dropdown-item" href="preorder.php">Pre Order</a>
                     </div>
                 </div>
             </div>
