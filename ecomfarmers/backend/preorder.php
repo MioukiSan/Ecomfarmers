@@ -86,7 +86,7 @@
                     }
                     return $data;
                 }
-
+                
                 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_product'])) {
                     $productId = $_POST['product_id'];
                     $orderedQuantity = $_POST['quantity'];

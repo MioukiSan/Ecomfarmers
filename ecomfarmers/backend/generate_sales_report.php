@@ -2,7 +2,7 @@
 $title = "Sales Report";
 require('../fpdf/FPDF.php');
 require '../connect.php';
-
+$this_date = 0;
 if (isset($_POST['between'])) {
     $start = $_POST['start_date'];
     $end = $_POST['end_date'];
