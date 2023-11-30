@@ -107,7 +107,7 @@
                 <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100 bg">
                     <div class="d-flex">
                         <img src="../img/logo.png" class="logo me-2" alt="pos">
-                        <a href="index.php"
+                        <a href="dashboard.php"
                             class="d-flex align-items-center mb-md-0 me-md-auto text-white text-decoration-none">
                             <span class="fw-bold"><?php echo "Welcome, ", $_SESSION['username']; ?></span>
                         </a>
@@ -164,7 +164,7 @@
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item" href="../logout.php">Sign out</a></li>
+                            <li><a class="dropdown-item" href="../logout.php">Logout</a></li>
                         </ul>
                     </div>
                 </div>

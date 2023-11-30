@@ -109,7 +109,7 @@
                 <?php foreach ($categories as $category) { ?>
                 <div class="category">
                     <label>
-                        <input type="checkbox" class="category-checkbox" name="category[]"
+                        <input type="radio" class="category-checkbox" name="category[]"
                             value="<?php echo $category; ?>"
                             <?php if (in_array($category, $selectedCategories)) echo 'checked'; ?>>
                         <?php echo $category; ?>
